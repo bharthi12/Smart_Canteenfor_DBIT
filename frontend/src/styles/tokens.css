@@ -1,0 +1,53 @@
+:root {
+  /* Brand Palette from ui.md */
+  --color-forest: #00552F;
+  --color-forest-deep: #003F25;
+  --color-forest-soft: #176B43;
+  --color-tomato: #F04B16;
+  --color-tomato-hover: #D93E0D;
+  --color-gold: #F8B91D;
+  --color-yellow: #FFD86B;
+  --color-cream: #F7E8C8;
+  --color-cream-light: #FFF8EA;
+  --color-white: #FFFFFF;
+  --color-ink: #171714;
+  --color-muted: #5D625B;
+  --color-border: #D8D2C4;
+  --color-border-dark: #375344;
+  --color-success: #176B43;
+  --color-warning: #8B5A00;
+  --color-danger: #B42318;
+  --color-danger-bg: #FEE4E2;
+
+  /* Elevation & Radii */
+  --shadow-sm: 0 2px 8px rgba(0, 35, 19, 0.08);
+  --shadow-card: 0 8px 24px rgba(0, 35, 19, 0.12);
+  --shadow-hover: 0 14px 36px rgba(0, 35, 19, 0.18);
+  --shadow-glow: 0 6px 20px rgba(240, 75, 22, 0.35);
+  
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-card: 20px;
+  --radius-control: 999px;
+
+  /* Typography */
+  --font-body: "Helvetica Neue", Helvetica, Arial, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Helvetica Neue", Helvetica, Arial, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --heading-sm: 1.5rem;
+  --heading-md: clamp(1.8rem, 3vw, 2.5rem);
+  --heading-lg: clamp(2.4rem, 6vw, 4.5rem);
+
+  /* Spacing Scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+}
