@@ -51,12 +51,14 @@ public class SecurityConfig {
             )
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .requestMatchers("/", "/index.html", "/assets/**", "/favicon.ico", "/*.svg", "/*.png", "/*.ico", "/*.json").permitAll()
                 .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
                 .requestMatchers("/api/auth/logout", "/api/auth/me").authenticated()
                 .requestMatchers(HttpMethod.GET, "/api/dishes", "/api/dishes/**").permitAll()
                 .requestMatchers("/ws/**", "/ws").permitAll()
                 .requestMatchers("/api/staff/**").hasRole("STAFF")
                 .requestMatchers("/api/orders/**").authenticated()
+                .requestMatchers(request -> !request.getServletPath().startsWith("/api")).permitAll()
                 .anyRequest().authenticated()
             )
             .exceptionHandling(ex -> ex

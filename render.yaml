@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: smart-canteen-fullstack
+    runtime: docker
+    dockerfilePath: Dockerfile
+    plan: free
+    region: oregon
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: DB_URL
+        sync: false
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: FRONTEND_ORIGIN
+        value: ""
+      - key: COOKIE_SAME_SITE
+        value: lax
+      - key: COOKIE_SECURE
+        value: "false"
