@@ -18,6 +18,8 @@ import {
   ToggleRight,
   WifiOff,
   User,
+  Plus,
+  Pencil,
 } from 'lucide-react';
 
 export function StaffDashboard() {
@@ -31,6 +33,16 @@ export function StaffDashboard() {
   const [successMsg, setSuccessMsg] = useState('');
   const [actionInProgress, setActionInProgress] = useState(null);
   const [wsConnected, setWsConnected] = useState(true);
+  const [dishFormOpen, setDishFormOpen] = useState(false);
+  const [editingDish, setEditingDish] = useState(null);
+  const [dishForm, setDishForm] = useState({
+    name: '',
+    description: '',
+    price: '',
+    imageUrl: '',
+    category: 'Breakfast',
+    available: true,
+  });
 
   useEffect(() => {
     fetchActiveOrders();
@@ -129,6 +141,58 @@ export function StaffDashboard() {
       showSuccess(`Availability updated.`);
     } catch (err) {
       setError(err.message || 'Failed to update dish availability.');
+    } finally {
+      setActionInProgress(null);
+    }
+  }
+
+  function openDishForm(dish = null) {
+    setEditingDish(dish);
+    setDishForm(dish ? {
+      name: dish.name,
+      description: dish.description || '',
+      price: String(dish.price),
+      imageUrl: dish.imageUrl || '',
+      category: dish.category,
+      available: dish.available,
+    } : {
+      name: '',
+      description: '',
+      price: '',
+      imageUrl: '',
+      category: 'Breakfast',
+      available: true,
+    });
+    setError('');
+    setSuccessMsg('');
+    setDishFormOpen(true);
+  }
+
+  async function handleSaveDish(event) {
+    event.preventDefault();
+    setActionInProgress('save-dish');
+    setError('');
+    try {
+      const dishData = {
+        ...dishForm,
+        name: dishForm.name.trim(),
+        description: dishForm.description.trim(),
+        price: Number(dishForm.price),
+        imageUrl: dishForm.imageUrl.trim() || null,
+        category: dishForm.category.trim(),
+      };
+      if (editingDish) {
+        await menuService.updateDish(editingDish.id, dishData);
+        showSuccess(`${dishData.name} updated.`);
+      } else {
+        await menuService.createDish(dishData);
+        showSuccess(`${dishData.name} added to the menu.`);
+      }
+      setDishFormOpen(false);
+      setEditingDish(null);
+      await fetchMenu();
+    } catch (err) {
+      setError(err.message || 'Failed to save menu item.');
     } finally {
       setActionInProgress(null);
     }
@@ -486,12 +550,72 @@ export function StaffDashboard() {
             padding: '28px',
           }}
         >
-          <h2 style={{ fontSize: 'var(--text-lg)', fontWeight: 800, marginBottom: '8px' }}>
-            Live Menu Availability Control
-          </h2>
-          <p style={{ color: 'var(--color-muted)', fontSize: 'var(--text-sm)', marginBottom: '24px' }}>
-            Instantly toggle dishes Available or Sold Out. Changes broadcast live to student ordering screens.
-          </p>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap', marginBottom: '24px' }}>
+            <div>
+              <h2 style={{ fontSize: 'var(--text-lg)', fontWeight: 800, marginBottom: '8px' }}>
+                Live Menu Availability Control
+              </h2>
+              <p style={{ color: 'var(--color-muted)', fontSize: 'var(--text-sm)' }}>
+                Toggle availability, add dishes, or edit existing menu items.
+              </p>
+            </div>
+            <button onClick={() => openDishForm()} className="btn btn-primary btn-sm">
+              <Plus size={16} /> Add Item
+            </button>
+          </div>
+
+          {dishFormOpen && (
+            <form onSubmit={handleSaveDish} className="form-card" style={{ marginBottom: '24px' }}>
+              <h3 style={{ fontSize: 'var(--text-lg)', fontWeight: 800, marginBottom: '20px' }}>
+                {editingDish ? 'Edit Menu Item' : 'Add Menu Item'}
+              </h3>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
+                <div className="form-group">
+                  <label className="form-label" htmlFor="dish-name">Name</label>
+                  <input id="dish-name" className="form-input" value={dishForm.name} maxLength={120} required
+                    onChange={(event) => setDishForm({ ...dishForm, name: event.target.value })} />
+                </div>
+                <div className="form-group">
+                  <label className="form-label" htmlFor="dish-price">Price (₹)</label>
+                  <input id="dish-price" className="form-input" type="number" min="0.01" step="0.01" value={dishForm.price} required
+                    onChange={(event) => setDishForm({ ...dishForm, price: event.target.value })} />
+                </div>
+                <div className="form-group">
+                  <label className="form-label" htmlFor="dish-category">Category</label>
+                  <input id="dish-category" className="form-input" value={dishForm.category} maxLength={60} required list="canteen-categories"
+                    onChange={(event) => setDishForm({ ...dishForm, category: event.target.value })} />
+                  <datalist id="canteen-categories">
+                    {['Breakfast', 'Meals', 'North Indian', 'Snacks', 'Beverages', 'Desserts'].map((category) => (
+                      <option key={category} value={category} />
+                    ))}
+                  </datalist>
+                </div>
+                <div className="form-group">
+                  <label className="form-label" htmlFor="dish-image">Image URL (optional)</label>
+                  <input id="dish-image" className="form-input" type="url" value={dishForm.imageUrl}
+                    onChange={(event) => setDishForm({ ...dishForm, imageUrl: event.target.value })} />
+                </div>
+              </div>
+              <div className="form-group">
+                <label className="form-label" htmlFor="dish-description">Description</label>
+                <textarea id="dish-description" className="form-input" rows={3} maxLength={5000} value={dishForm.description}
+                  onChange={(event) => setDishForm({ ...dishForm, description: event.target.value })} />
+              </div>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px', fontWeight: 700 }}>
+                <input type="checkbox" checked={dishForm.available}
+                  onChange={(event) => setDishForm({ ...dishForm, available: event.target.checked })} />
+                Available for ordering
+              </label>
+              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                <button type="submit" className="btn btn-primary btn-sm" disabled={actionInProgress === 'save-dish'}>
+                  {actionInProgress === 'save-dish' ? 'Saving…' : editingDish ? 'Save Changes' : 'Add Menu Item'}
+                </button>
+                <button type="button" className="btn btn-outline btn-sm" onClick={() => setDishFormOpen(false)}>
+                  Cancel
+                </button>
+              </div>
+            </form>
+          )}
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {dishes.map((dish) => (
@@ -539,6 +663,9 @@ export function StaffDashboard() {
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                  <button onClick={() => openDishForm(dish)} className="btn btn-outline btn-sm">
+                    <Pencil size={14} /> Edit
+                  </button>
                   <span
                     className={`badge ${dish.available ? 'badge-success' : 'badge-danger'}`}
                     style={{ padding: '6px 14px' }}

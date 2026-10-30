@@ -1,6 +1,7 @@
 package com.canteen.controller;
 
 import com.canteen.dto.dish.DishResponse;
+import com.canteen.dto.dish.SaveDishRequest;
 import com.canteen.dto.dish.UpdateAvailabilityRequest;
 import com.canteen.dto.order.OrderResponse;
 import com.canteen.dto.order.UpdateOrderStatusRequest;
@@ -12,6 +13,7 @@ import com.canteen.service.DishService;
 import com.canteen.service.OrderService;
 import com.canteen.websocket.EventPublisher;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -79,5 +81,17 @@ public class StaffController {
             eventPublisher.publishDishAvailabilityUpdated(dish);
         }
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/dishes")
+    public ResponseEntity<DishResponse> createDish(@Valid @RequestBody SaveDishRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(dishService.createDish(request));
+    }
+
+    @PutMapping("/dishes/{id}")
+    public ResponseEntity<DishResponse> updateDish(
+            @PathVariable Long id,
+            @Valid @RequestBody SaveDishRequest request) {
+        return ResponseEntity.ok(dishService.updateDish(id, request));
     }
 }
