@@ -16,4 +16,18 @@ export const menuService = {
       body: { available },
     });
   },
+
+  async createDish(dish) {
+    return apiRequest('/api/staff/dishes', {
+      method: 'POST',
+      body: dish,
+    });
+  },
+
+  async updateDish(id, dish) {
+    return apiRequest(`/api/staff/dishes/${id}`, {
+      method: 'PUT',
+      body: dish,
+    });
+  },
 };
