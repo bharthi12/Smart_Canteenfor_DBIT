@@ -91,12 +91,7 @@ java_proj/
 In `backend/.env`:
 
 ```properties
-DB_URL=jdbc:mysql://localhost:3306/smart_canteen?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-DB_USERNAME=root
-DB_PASSWORD=bharthi
-SERVER_PORT=8080
-COLLEGE_EMAIL_DOMAIN=
-FRONTEND_ORIGIN=http://localhost:5173
+
 ```
 
 ---
